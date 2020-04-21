@@ -1,0 +1,51 @@
+h2 {
+    color: rgb(136, 133, 133);
+    width: 500px;
+    padding-left: 25%;
+    font-size: 32px;
+}
+
+input, button {
+    margin-top: 50px;
+}
+
+button {
+    border: 0;
+    border-radius: 8px;
+    height: 50px;
+    font-size: 18px;
+    text-align: center;
+    margin-left: 15px;
+    background-color: #E02041;
+    color: #FFF;
+    text-decoration: none;
+    font-weight: 700;
+    transition: filter 0.9s;
+}
+
+input {
+    margin-left: 150px;
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
+    display: inline-block;
+    width: 300px;
+    border: none;
+    border-bottom: 1px solid #757575;
+    background-color: #f4e6fc;
+    border-radius: 8px;
+    height: 30px;
+    width: 150px;
+}
+
+input:focus {
+    outline: none;
+}
+
+button:hover {
+    cursor: pointer;
+    filter: brightness(80%);
+}
+
+button:focus {
+    outline: none;
+}
