@@ -37,15 +37,11 @@ input {
     width: 150px;
 }
 
-input:focus {
+input:focus, button:focus {
     outline: none;
 }
 
 button:hover {
     cursor: pointer;
     filter: brightness(80%);
-}
-
-button:focus {
-    outline: none;
 }
