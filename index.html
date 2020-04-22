@@ -17,9 +17,16 @@
     </div>
     <script>
         function enviar() {
+            const { localDownload } = require('./local.json')
+            const { ipcRenderer } = require('electron')
             var texto = document.getElementById('text').value
             if (document.getElementById('text').value == 0) {
                 console.log('Null')
+                return
+            }
+            if (localDownload == "") {
+                console.log('O local de download não foi inserido!')
+                ipcRenderer.send('open-set-window')
                 return
             }
             fetch('http://localhost:8080/download', {

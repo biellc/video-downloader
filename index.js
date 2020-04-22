@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+let { localDownload } = require('./local.json')
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -11,18 +12,19 @@ const getInfoVideo = promisify(ytdl.getInfo)
 
 const expre = express()
 
+let info;
+
 expre.use(bodyParser.urlencoded({ extended: true }))
 expre.use(bodyParser.json())
-expre.use(express.static(path.join(__dirname, 'videos')))
+expre.use(express.static(path.join(localDownload)))
 
-expre.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')))
-
+expre.get('/', (req, res) => res.sendFile(path.join(localDownload+`/${info.title}`, 'index.html')))
 
 expre.post('/download', async (req, res) => {
     try {
-        const info = await getInfoVideo(req.body.url.replace('https://www.youtube.com/watch?v=', ''))
+        info = await getInfoVideo(req.body.url.replace('https://www.youtube.com/watch?v=', ''))
         ytdl(req.body.url)
-            .pipe(fs.createWriteStream(`videos/${info.title}.mp4`))
+            .pipe(fs.createWriteStream(`${localDownload}/${info.title}.mp4`))
             .on('finish', () => res.status(200).json({ video: `${info.title}.mp4` }))
     } catch (err) {
         res.status(500).json(err)
@@ -43,7 +45,8 @@ app.on('ready', () => {
         webPreferences: {
             nodeIntegration: true
         },
-        resizable: false
+        resizable: false,
+        icon: './icons/icon'
     })
 
     let menu = Menu.buildFromTemplate([{
@@ -53,7 +56,29 @@ app.on('ready', () => {
             click: () => {
                 mainWindow.loadURL(`file://${__dirname}/index.html`)
             }
-        }]
+        },
+        {
+            label: 'Local de download',
+            click: () => {
+                if (setWindow == null) {
+                    setWindow = new BrowserWindow({
+                        width: 500,
+                        height: 250,
+                        webPreferences: {
+                            nodeIntegration: true
+                        },
+                        resizable: false,
+                        alwaysOnTop: true
+                    })
+
+                    setWindow.loadURL(`file://${__dirname}/set.html`)
+
+                    setWindow.on('closed', () => {
+                        setWindow = null;
+                    })
+                }
+            }
+        },]
     }])
     Menu.setApplicationMenu(menu)
 
@@ -63,4 +88,29 @@ app.on('ready', () => {
 
 app.on('window-all-closed', () => {
     app.quit()
+})
+
+ipcMain.on('open-set-window', () => {
+    if (setWindow == null) {
+        setWindow = new BrowserWindow({
+            width: 500,
+            height: 250,
+            webPreferences: {
+                nodeIntegration: true
+            },
+            resizable: false,
+            alwaysOnTop: true
+        })
+
+        setWindow.loadURL(`file://${__dirname}/set.html`)
+
+        setWindow.on('closed', () => {
+            setWindow = null;
+        })
+    }
+})
+
+ipcMain.on('close-set-window', () => {
+    setWindow.close()
+
 })
